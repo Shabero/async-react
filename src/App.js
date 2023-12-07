@@ -1,25 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from "react-redux";
+import {addTodo, getTodos} from "./redux/todoAction/todoAction";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const dispatch = useDispatch();
+    const todos = useSelector(s => s.todos);
+    const [newTodo, setNewTodo] = useState('');
+    const [deleteTodo, setDeleteTodo] = useState(null);
+
+    useEffect(() => {
+        dispatch(getTodos())
+    }, []);
+
+    const handleAddTodo = () => {
+        const obj = {
+            title: newTodo,
+            "completed": false,
+            "createdAt": +new Date(),
+            "competedAt": null
+        }
+        setNewTodo('')
+        dispatch(addTodo(obj))
+    }
+
+    const handleDeleteTodo = (id) => {
+        setDeleteTodo(id)
+    }
+
+    return (
+        <div>
+            <input type="text"
+                   onChange={e =>
+                       setNewTodo(e.target.value)}/>
+            <button onClick={handleAddTodo}>Add</button>
+            {
+                todos.map(todo => (
+                    <div key={todo.id}>
+                        <h2>{todo.title}</h2>
+                        <input type="checkbox" checked={todo.completed} />
+                        <button onClick={() => handleDeleteTodo(todo.id)}>Delete</ button>
+                    </div>
+                ))
+            }
+        </div>
+    );
+};
 
 export default App;
